@@ -11,6 +11,8 @@
 #include <list>
 #include <cstdarg>
 #include <map>
+#include "singleton.h"
+#include "util.h"
 
 #define CPPSERVER_LOG_LEVEL(logger, level) \
     if (logger->getLevel() <= level)  \
@@ -35,6 +37,8 @@
 #define CPPSERVER_LOG_fmt_WARN(logger, fmt, ...) CPPSERVER_LOG_FMT_LEVEL(logger, CppServer::LogLevel::WARN, fmt, __VA_ARGS__)
 #define CPPSERVER_LOG_fmt_ERROR(logger, fmt, ...) CPPSERVER_LOG_FMT_LEVEL(logger, CppServer::LogLevel::ERROR, fmt, __VA_ARGS__)
 #define CPPSERVER_LOG_fmt_FATAL(logger, fmt, ...) CPPSERVER_LOG_FMT_LEVEL(logger, CppServer::LogLevel::FATAL, fmt, __VA_ARGS__)
+
+#define CPPSERVER_LOG_ROOT() CppServer::LoggerMgr::GetInstance()->getRoot()
 
 namespace CppServer {
 
@@ -193,12 +197,13 @@ class LoggerManager {
     Logger::ptr getLogger(const std::string& name);
 
     void init();
+    Logger::ptr getRoot() const { return m_root; }
  private:
     std::map<std::string, Logger::ptr> m_logger;
     Logger::ptr m_root;
 };
 
-
+typedef CppServer::Singleton<LoggerManager> LoggerMgr;
 
 }  // CppServer
 

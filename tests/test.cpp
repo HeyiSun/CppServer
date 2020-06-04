@@ -1,6 +1,5 @@
 #include <iostream>
 #include "../CppServer/log.h"
-#include "../CppServer/util.h"
 
 int main(int argc, char** argv) {
     CppServer::Logger::ptr logger(new CppServer::Logger);
@@ -19,5 +18,8 @@ int main(int argc, char** argv) {
     CPPSERVER_LOG_INFO(logger) << "test macro";
     CPPSERVER_LOG_ERROR(logger) << "test macro error";
     CPPSERVER_LOG_fmt_FATAL(logger, "Hello %s", "World");
+
+    auto l = CppServer::LoggerMgr::GetInstance()->getLogger("xx");
+    CPPSERVER_LOG_INFO(l) << "xxx";
     return 0;
 }

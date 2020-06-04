@@ -1,4 +1,4 @@
-#include "log.h"
+#include "CppServer/log.h"
 #include <functional>
 #include <time.h>
 
@@ -376,12 +376,12 @@ void LogFormatter::init() {
 
 LoggerManager::LoggerManager() {
     m_root.reset(new Logger);
-    m_root.addAppender(LogAppender::ptr(new StdoutLogAppender));
+    m_root->addAppender(LogAppender::ptr(new StdoutLogAppender));
 }
 
 Logger::ptr LoggerManager::getLogger(const std::string& name) {
-    auto it = m_loggers.find(name);
-    return it == m_loggers.end() ? m_root, it->second;
+    auto it = m_logger.find(name);
+    return it == m_logger.end() ? m_root : it->second;
 }
 
 
