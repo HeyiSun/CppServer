@@ -12,6 +12,7 @@ set(LIB_SRC
    CppServer/log.cpp
    CppServer/util.cpp
    CppServer/config.cpp
+   CppServer/thread.cpp
     )
 
 add_library(CppServer SHARED ${LIB_SRC})
@@ -19,15 +20,26 @@ force_redefine_file_macro_for_sources(CppServer)
 #add_library(CppServer_static STATIC ${LIB_SRC})
 #SET_TARGET_PROPERTIES(CppServer_static PROPERTIES OUTPUT_NAME "CppServer")
 
+set(LIB_LIB
+    CppServer
+    pthread
+    yaml-cpp
+     )
+
 add_executable(test tests/test.cpp)
 add_dependencies(test CppServer)
 force_redefine_file_macro_for_sources(test)
-target_link_libraries(test CppServer yaml-cpp)
+target_link_libraries(test ${LIB_LIB})
 
 add_executable(test_config tests/test_config.cpp)
 add_dependencies(test_config CppServer)
 force_redefine_file_macro_for_sources(test_config)
-target_link_libraries(test_config CppServer yaml-cpp)
+target_link_libraries(test_config ${LIB_LIB})
+
+add_executable(test_thread tests/test_thread.cpp)
+add_dependencies(test_thread CppServer)
+force_redefine_file_macro_for_sources(test_thread)
+target_link_libraries(test_thread ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
