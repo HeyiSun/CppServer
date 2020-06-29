@@ -13,6 +13,7 @@
 #include <map>
 #include "singleton.h"
 #include "util.h"
+#include "thread.h"
 
 #define CPPSERVER_LOG_LEVEL(logger, level) \
     if (logger->getLevel() <= level)  \
@@ -135,6 +136,7 @@ class LogAppender {
  friend class Logger;
  public:
     typedef std::shared_ptr<LogAppender> ptr;
+    typedef NullMutex MutexType;
     LogAppender() : m_level{LogLevel::DEBUG} {}
     virtual ~LogAppender() {}
 
@@ -142,12 +144,13 @@ class LogAppender {
     virtual std::string toYamlString() = 0;
 
     void setFormatter(LogFormatter::ptr val);
-    LogFormatter::ptr getFormatter() const { return m_formatter; }
+    LogFormatter::ptr getFormatter();
     void setLevel(LogLevel::Level level) { m_level = level; }
     LogLevel::Level getLevel() const { return m_level; }
  protected:
     LogLevel::Level m_level;
     bool m_hasFormatter = false;
+    MutexType m_mutex;
     LogFormatter::ptr m_formatter;
 };
 
@@ -155,7 +158,7 @@ class Logger : public std::enable_shared_from_this<Logger> {
  friend class LoggerManager;
  public:
     typedef std::shared_ptr<Logger> ptr;
-
+    typedef NullMutex MutexType;
 
     Logger(const std::string& name = "root");
     void log(LogLevel::Level level, LogEvent::ptr event);
@@ -182,6 +185,7 @@ class Logger : public std::enable_shared_from_this<Logger> {
  private:
     std::string m_name;                        // log name
     LogLevel::Level m_level;                   // log level
+    MutexType m_mutex;
     std::list<LogAppender::ptr> m_appenders;   // Appender Collection
     LogFormatter::ptr m_formatter;
     Logger::ptr m_root;
@@ -215,6 +219,7 @@ class FileLogAppender : public LogAppender {
 
 class LoggerManager {
  public:
+    typedef NullMutex MutexType;
     LoggerManager();
     Logger::ptr getLogger(const std::string& name);
 
@@ -222,6 +227,7 @@ class LoggerManager {
     Logger::ptr getRoot() const { return m_root; }
     std::string toYamlString();
  private:
+    MutexType m_mutex;
     std::map<std::string, Logger::ptr> m_loggers;
     Logger::ptr m_root;
 };
