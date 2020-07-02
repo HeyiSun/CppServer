@@ -32,8 +32,8 @@ void func3() {
 
 int main(int argc, char** argv) {
     CPPSERVER_LOG_INFO(g_logger) << "thread test begin";
-    // YAML::Node root = YAML::LoadFile("/home/heyisun/Documents/playground/cpp/CppServer/bin/conf/log2.yml");
-    YAML::Node root = YAML::LoadFile("/root/log2.yml");
+    YAML::Node root = YAML::LoadFile("/home/heyisun/Documents/playground/cpp/CppServer/bin/conf/log2.yml");
+    // YAML::Node root = YAML::LoadFile("/root/log2.yml");
     CppServer::Config::LoadFromYaml(root);
 
     std::vector<CppServer::Thread::ptr> thrs;
