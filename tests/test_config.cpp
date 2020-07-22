@@ -168,7 +168,7 @@ void test_class() {
         } \
         CPPSERVER_LOG_INFO(CPPSERVER_LOG_ROOT()) << prefix << ": size=" << m.size(); \
     }
-    g_person->addListener(10, [](const Person& old_value, const Person& new_value) {
+    g_person->addListener([](const Person& old_value, const Person& new_value) {
         CPPSERVER_LOG_INFO(CPPSERVER_LOG_ROOT()) << "old_value=" << old_value.toString()
                                 << " new_value=" << new_value.toString();
     });

@@ -53,6 +53,14 @@ class FiberIdFormatItem : public LogFormatter::FormatItem {
     }
 };
 
+class ThreadNameFormatItem : public LogFormatter::FormatItem {
+ public:
+    ThreadNameFormatItem(const std::string& str = "") {}
+    void format(std::ostream& os, std::shared_ptr<Logger> logger, LogLevel::Level level, LogEvent::ptr event) {
+        os << event->getThreadName();
+    }
+};
+
 class DateTimeFormatItem : public LogFormatter::FormatItem {
  public:
     DateTimeFormatItem(const std::string& format)
@@ -117,14 +125,16 @@ class TabFormatItem : public LogFormatter::FormatItem {
 };
 
 LogEvent::LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level,
-                    const char* file, int32_t line, uint32_t elapse,
-                    uint32_t thread_id, uint32_t fiber_id, uint64_t time)
+                   const char* file, int32_t line, uint32_t elapse,
+                   uint32_t thread_id, uint32_t fiber_id, uint64_t time,
+                   const std::string& thread_name)
     : m_file(file),
       m_line(line),
       m_elapse(elapse),
       m_threadid(thread_id),
       m_fiberId(fiber_id),
       m_time(time),
+      m_threadName(thread_name),
       m_logger(logger),
       m_level(level) {
 }
@@ -199,7 +209,7 @@ std::stringstream& LogEventWrap::getSS() {
 Logger::Logger(const std::string& name) 
     : m_name{name},
       m_level(LogLevel::DEBUG),
-      m_formatter{new LogFormatter("%d{%Y-%m-%d %H:%M:%S}%T%t%T%F%T[%p]%T[%c]%T%f:%l%T%m%n")} {
+      m_formatter{new LogFormatter("%d{%Y-%m-%d %H:%M:%S}%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n")} {
 }
 
 void Logger::setFormatter(LogFormatter::ptr val) {
@@ -334,7 +344,7 @@ void FileLogAppender::log(std::shared_ptr<Logger> logger, LogLevel::Level level,
             m_lastTime = 0;
         }
         MutexType::Lock lock(m_mutex);
-        if (!m_filestream << m_formatter->format(logger, level, event)) {
+        if (!(m_filestream << m_formatter->format(logger, level, event))) {
             std::cout << "error" << std::endl;
         }
     }
@@ -483,6 +493,7 @@ void LogFormatter::init() {
         XX(l, LineFormatItem),
         XX(F, FiberIdFormatItem),
         XX(T, TabFormatItem),
+        XX(N, ThreadNameFormatItem),
 #undef XX
     };
 
@@ -660,7 +671,7 @@ CppServer::ConfigVar<std::set<LogDefine>>::ptr g_log_defines =
 
 struct LogIniter {
     LogIniter() {
-        g_log_defines->addListener(0xF1E231, [](const std::set<LogDefine>& old_value,
+        g_log_defines->addListener([](const std::set<LogDefine>& old_value,
                                                 const std::set<LogDefine>& new_value){
             CPPSERVER_LOG_INFO(CPPSERVER_LOG_ROOT()) << "on_logger_conf_changed";
             // add

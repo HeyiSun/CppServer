@@ -13,6 +13,7 @@ set(LIB_SRC
    CppServer/util.cpp
    CppServer/config.cpp
    CppServer/thread.cpp
+   CppServer/fiber.cpp
     )
 
 add_library(CppServer SHARED ${LIB_SRC})
@@ -40,6 +41,16 @@ add_executable(test_thread tests/test_thread.cpp)
 add_dependencies(test_thread CppServer)
 force_redefine_file_macro_for_sources(test_thread)
 target_link_libraries(test_thread ${LIB_LIB})
+
+add_executable(test_util tests/test_util.cpp)
+add_dependencies(test_util CppServer)
+force_redefine_file_macro_for_sources(test_util)
+target_link_libraries(test_util ${LIB_LIB})
+
+add_executable(test_fiber tests/test_fiber.cpp)
+add_dependencies(test_fiber CppServer)
+force_redefine_file_macro_for_sources(test_fiber)
+target_link_libraries(test_fiber ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

@@ -37,11 +37,11 @@ int main(int argc, char** argv) {
     CppServer::Config::LoadFromYaml(root);
 
     std::vector<CppServer::Thread::ptr> thrs;
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 1; ++i) {
         CppServer::Thread::ptr thr(new CppServer::Thread(&func2, "name_" + std::to_string(i * 2)));
-        CppServer::Thread::ptr thr2(new CppServer::Thread(&func3, "name_" + std::to_string(i * 2 + 1)));
+        // CppServer::Thread::ptr thr2(new CppServer::Thread(&func3, "name_" + std::to_string(i * 2 + 1)));
         thrs.push_back(thr);
-        thrs.push_back(thr2);
+        // thrs.push_back(thr2);
     }
 
     for (size_t i = 0; i < thrs.size(); ++i) {

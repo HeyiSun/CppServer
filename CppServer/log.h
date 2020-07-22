@@ -19,7 +19,8 @@
     if (logger->getLevel() <= level)  \
         CppServer::LogEventWrap(CppServer::LogEvent::ptr(new CppServer::LogEvent(logger, \
                                 level, __FILE__, __LINE__, 0, CppServer::GetThreadId(), \
-                                CppServer::GetFiberId(), time(0)))).getSS()
+                                CppServer::GetFiberId(), time(0), CppServer::Thread::GetName())) \
+                               ).getSS()
 
 #define CPPSERVER_LOG_DEBUG(logger) CPPSERVER_LOG_LEVEL(logger, CppServer::LogLevel::DEBUG)
 #define CPPSERVER_LOG_INFO(logger) CPPSERVER_LOG_LEVEL(logger, CppServer::LogLevel::INFO)
@@ -31,7 +32,8 @@
     if (logger->getLevel() <= level)  \
         CppServer::LogEventWrap(CppServer::LogEvent::ptr(new CppServer::LogEvent(logger, \
                                 level, __FILE__, __LINE__, 0, CppServer::GetThreadId(), \
-                  CppServer::GetFiberId(), time(0)))).getEvent()->format(fmt, __VA_ARGS__)
+                                CppServer::GetFiberId(), time(0), CppServer::Thread::GetName())) \
+                               ).getEvent()->format(fmt, __VA_ARGS__)
 
 #define CPPSERVER_LOG_fmt_DEBUG(logger, fmt, ...) CPPSERVER_LOG_FMT_LEVEL(logger, CppServer::LogLevel::DEBUG, fmt, __VA_ARGS__)
 #define CPPSERVER_LOG_fmt_INFO(logger, fmt, ...) CPPSERVER_LOG_FMT_LEVEL(logger, CppServer::LogLevel::INFO, fmt, __VA_ARGS__)
@@ -67,7 +69,8 @@ class LogEvent {
     typedef std::shared_ptr<LogEvent> ptr;
     LogEvent(std::shared_ptr<Logger> logger, LogLevel::Level level,
              const char* file, int32_t m_line, uint32_t elapse,
-             uint32_t thread_id, uint32_t fiber_id, uint64_t time);
+             uint32_t thread_id, uint32_t fiber_id, uint64_t time,
+             const std::string& thread_name);
 
     const char* getFile() const { return m_file; }
     uint32_t getLine() const { return m_line; }
@@ -75,6 +78,7 @@ class LogEvent {
     uint32_t getThreadId() const { return m_threadid; }
     uint32_t getFiberId() const { return m_fiberId; }
     uint64_t getTime() const { return m_time; }
+    std::string getThreadName() const { return m_threadName; }
     std::string getContent() const { return m_ss.str(); }
     std::shared_ptr<Logger> getLogger() const { return m_logger; }
     LogLevel::Level getLevel() const { return m_level; }
@@ -89,6 +93,7 @@ class LogEvent {
     uint32_t m_threadid = 0;        //   thread id
     uint32_t m_fiberId = 0;         //   fiber thread id
     uint64_t m_time;                //   timestamp
+    std::string m_threadName;
     std::stringstream m_ss;
 
     std::shared_ptr<Logger> m_logger;

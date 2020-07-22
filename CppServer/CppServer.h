@@ -10,5 +10,7 @@
 #include "CppServer/log.h"
 #include "CppServer/singleton.h"
 #include "CppServer/util.h"
+#include "CppServer/macro.h"
+#include "CppServer/fiber.h"
 
 #endif //__CPPSERVER_CPPSERVER_H__
