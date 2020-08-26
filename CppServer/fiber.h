@@ -15,7 +15,10 @@ namespace CppServer {
 //                |
 //                v
 //             sub_fiber
+
+class Scheduler;
 class Fiber : public std::enable_shared_from_this<Fiber> {
+ friend class Scheduler;
  public:
     typedef std::shared_ptr<Fiber> ptr;
     enum State {
@@ -30,23 +33,30 @@ class Fiber : public std::enable_shared_from_this<Fiber> {
     Fiber();
 
  public:
-    Fiber(std::function<void()> cb, size_t stacksize = 0);
+    Fiber(std::function<void()> cb, size_t stacksize = 0, bool use_caller = false);
     ~Fiber();
 
     void reset(std::function<void()> cb);
+    void call();
+    void back();
     void swapIn();
     void swapOut();
 
     uint64_t getId() const { return m_id; }
+    State getState() const { return m_state; }
+    
 
  public:
+    // 设置当前线程运行的协程
     static void SetThis(Fiber* f);
-    static Fiber::ptr GetThis();
+    // 获取当前协程的智能指针
+    static Fiber::ptr GetThis(); 
     static void YieldToReady();
     static void YieldToHold();
     static uint64_t TotalFibers();
 
     static void MainFunc();
+    static void CallerMainFunc();
     static uint64_t GetFiberId();
 
  private:

@@ -9,11 +9,14 @@ set(CMAKE_CXX_FLAGS "$ENV{CXXFLGAS} -rdynamic -O0 -ggdb -std=c++11 -Wall -Wno-de
 include_directories(.)
 
 set(LIB_SRC
-   CppServer/log.cpp
-   CppServer/util.cpp
-   CppServer/config.cpp
-   CppServer/thread.cpp
-   CppServer/fiber.cpp
+    CppServer/log.cpp
+    CppServer/util.cpp
+    CppServer/config.cpp
+    CppServer/thread.cpp
+    CppServer/fiber.cpp
+    CppServer/scheduler.cpp
+    CppServer/iomanager.cpp
+    CppServer/timer.cpp
     )
 
 add_library(CppServer SHARED ${LIB_SRC})
@@ -51,6 +54,16 @@ add_executable(test_fiber tests/test_fiber.cpp)
 add_dependencies(test_fiber CppServer)
 force_redefine_file_macro_for_sources(test_fiber)
 target_link_libraries(test_fiber ${LIB_LIB})
+
+add_executable(test_scheduler tests/test_scheduler.cpp)
+add_dependencies(test_scheduler CppServer)
+force_redefine_file_macro_for_sources(test_scheduler)
+target_link_libraries(test_scheduler ${LIB_LIB})
+
+add_executable(test_iomanager tests/test_iomanager.cpp)
+add_dependencies(test_iomanager CppServer)
+force_redefine_file_macro_for_sources(test_iomanager)
+target_link_libraries(test_iomanager ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

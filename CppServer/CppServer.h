@@ -12,5 +12,6 @@
 #include "CppServer/util.h"
 #include "CppServer/macro.h"
 #include "CppServer/fiber.h"
+#include "CppServer/scheduler.h"
 
 #endif //__CPPSERVER_CPPSERVER_H__
