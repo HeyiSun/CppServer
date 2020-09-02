@@ -1,6 +1,7 @@
 #include "scheduler.h"
 #include "log.h"
 #include "macro.h"
+#include "hook.h"
 
 namespace CppServer {
 
@@ -136,6 +137,7 @@ void Scheduler::stop() {
 void Scheduler::run() {
     // Fiber::GetThis(); // 初始化主协程
     CPPSERVER_LOG_INFO(g_logger) << "run";
+    set_hook_enable(true);
     setThis();
     if (CppServer::GetThreadId() != m_rootThread) { // rootThread在use_caller的情况下已经在构造函数里创建主协程了
         t_scheduler_fiber = Fiber::GetThis().get();    
@@ -159,13 +161,12 @@ void Scheduler::run() {
                     continue;
                 }
                 CPPSERVER_ASSERT(it->fiber || it->cb);
-                if (it->fiber && it->fiber->getState() != Fiber::EXEC) {
+                if (it->fiber && it->fiber->getState() == Fiber::EXEC) {
                     ++it;
                     continue;
                 }
 
                 ft = *it;
-                tickle_me = true;
                 m_fibers.erase(it++);
                 ++m_activeThreadCount;
                 is_active = true;
@@ -185,7 +186,7 @@ void Scheduler::run() {
 
             if (ft.fiber->getState() == Fiber::READY) {
                 schedule(ft.fiber); // 还需要执行
-            } else if (ft.fiber->getState() != Fiber::TERM ||
+            } else if (ft.fiber->getState() != Fiber::TERM &&
                        ft.fiber->getState() != Fiber::EXCEPT) {
                 ft.fiber->m_state = Fiber::HOLD;
             }
