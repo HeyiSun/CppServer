@@ -17,6 +17,9 @@ set(LIB_SRC
     CppServer/scheduler.cpp
     CppServer/iomanager.cpp
     CppServer/timer.cpp
+    CppServer/hook.cpp
+    CppServer/fd_manager.cpp
+    CppServer/address.cpp
     )
 
 add_library(CppServer SHARED ${LIB_SRC})
@@ -26,6 +29,7 @@ force_redefine_file_macro_for_sources(CppServer)
 
 set(LIB_LIB
     CppServer
+    dl
     pthread
     yaml-cpp
      )
@@ -64,6 +68,16 @@ add_executable(test_iomanager tests/test_iomanager.cpp)
 add_dependencies(test_iomanager CppServer)
 force_redefine_file_macro_for_sources(test_iomanager)
 target_link_libraries(test_iomanager ${LIB_LIB})
+
+add_executable(test_hook tests/test_hook.cpp)
+add_dependencies(test_hook CppServer)
+force_redefine_file_macro_for_sources(test_hook)
+target_link_libraries(test_hook ${LIB_LIB})
+
+add_executable(test_address tests/test_address.cpp)
+add_dependencies(test_address CppServer)
+force_redefine_file_macro_for_sources(test_address)
+target_link_libraries(test_address ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
