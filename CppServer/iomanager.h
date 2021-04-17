@@ -56,7 +56,7 @@ class IOManager : public Scheduler, public TimerManager {
     bool stopping(uint64_t& timeout);
  private:
     int m_epfd = 0;
-    int m_tickleFds[2];
+    int m_tickleFds[2];  // 用来tickle的管道fd
 
     std::atomic<size_t> m_pendingEventCount = {0}; // 现在要等待执行的事件数量
     RWMutexType m_mutex;
@@ -64,33 +64,6 @@ class IOManager : public Scheduler, public TimerManager {
 };
 
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -28,7 +28,7 @@ void IOManager::FdContext::resetContext(EventContext& ctx) {
     ctx.fiber.reset();
     ctx.cb = nullptr;
 }
-// 为什么不重置eventContext
+// 为什么不重置eventContext? schedule之后cb/fiber不一定运行，所以当然不能重置context
 void IOManager::FdContext::triggerEvent(IOManager::Event event) {
     CPPSERVER_ASSERT(events & event);  // 事件存在
     events = (Event) (events & ~event);

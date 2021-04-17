@@ -124,7 +124,7 @@ void Fiber::call() {
 }
 
 void Fiber::back() {
-    // 当前协程从主协程设为本协程
+    // 当前协程从本协程设为主协程
     SetThis(t_threadFiber.get());
     if (swapcontext(&m_ctx, &t_threadFiber->m_ctx)) {
         CPPSERVER_ASSERT2(false, "swapcontext");
@@ -229,7 +229,7 @@ void Fiber::CallerMainFunc() {
     raw_ptr->back();
     /*
         如何防止cur.reset析构掉当前对象？
-        t_fiber一直都是指向一个被智能指针托管的对象，所以这里GetThis()相当于让cur共享了这个对象，所以cur一定不是这个对象的唯一owner
+        t_threadFiber一直都是指向一个被智能指针托管的对象，所以这里GetThis()相当于让cur共享了这个对象，所以cur一定不是这个对象的唯一owner
         如果cur是唯一owner, 意味着GetThis()里的t_fiber一定指向一个未被智能指针托管的对象，那其中的shared_from_this()肯定出问题
     */
 

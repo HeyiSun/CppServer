@@ -63,7 +63,8 @@ void Scheduler::start() {
                                       m_name + "_" + std::to_string(i)));
         m_threadIds.push_back(m_threads[i]->getId());
     }
-    lock.unlock(); // 下面rootFiber还是要跑run，还要再锁一次
+    lock.unlock();
+    // 下面rootFiber还是要跑run，还要再锁一次
     // if (m_rootFiber) {
     //     m_rootFiber->call();
     //     CPPSERVER_LOG_INFO(g_logger) << "call out " << m_rootFiber->getState();
@@ -84,10 +85,13 @@ void Scheduler::stop() {
         }
     }
     // bool exit_on_this_fiber = false;
+    // 如果use_caller了，那么当前线程所属的sceduler一定是调用stop的scheduler
+    // 如果没use_caller, 那么当前线程所属的scheduler一定是不是调用stop的scheduler(应该是null)
+    // 这里sylar应该是忘记检测当前协程是主协程了
     if (m_rootThread != -1) { // use_caller
-        // 当use_caller时， stop一定要在创建线程执行
         CPPSERVER_ASSERT(GetThis() == this);
     } else {
+        // 当未use_caller时， stop一定要在创建线程执行
         CPPSERVER_ASSERT(GetThis() != this);
     }
 
@@ -151,7 +155,7 @@ void Scheduler::run() {
         bool tickle_me = false;
         bool is_active = false;
         {
-            // 从协程队列取出协程
+            // 从任务队列中找到任务
             MutexType::Lock lock(m_mutex); 
             auto it = m_fibers.begin();
             while (it != m_fibers.end()) {
