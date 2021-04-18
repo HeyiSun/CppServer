@@ -20,6 +20,7 @@ set(LIB_SRC
     CppServer/hook.cpp
     CppServer/fd_manager.cpp
     CppServer/address.cpp
+    CppServer/socket.cpp
     )
 
 add_library(CppServer SHARED ${LIB_SRC})
@@ -78,6 +79,11 @@ add_executable(test_address tests/test_address.cpp)
 add_dependencies(test_address CppServer)
 force_redefine_file_macro_for_sources(test_address)
 target_link_libraries(test_address ${LIB_LIB})
+
+add_executable(test_socket tests/test_socket.cpp)
+add_dependencies(test_socket CppServer)
+force_redefine_file_macro_for_sources(test_socket)
+target_link_libraries(test_socket ${LIB_LIB})
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)

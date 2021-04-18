@@ -9,7 +9,7 @@
 
 namespace CppServer {
 
-static CppServer::Logger::ptr g_logger = CPPSERVER_LOG_ROOT();
+static CppServer::Logger::ptr g_logger = CPPSERVER_LOG_NAME("system");
 
 template<class T>
 static T CreateMask(uint32_t bits) {
@@ -97,9 +97,6 @@ bool Address::Lookup(std::vector<Address::ptr>& result, const std::string& host,
     next = results;
     while (next) {
         result.push_back(Create(next->ai_addr, (socklen_t) next->ai_addrlen));
-        if (next->ai_socktype) {
-            CPPSERVER_LOG_ERROR(g_logger) << "type=" << next->ai_socktype;
-        }
         next = next->ai_next;
     }
 
@@ -491,6 +488,10 @@ const sockaddr* UnixAddress::getAddr() const {
 
 socklen_t UnixAddress::getAddrLen() const {
     return m_length;
+}
+
+void UnixAddress::setAddrLen(uint32_t v) {
+    m_length = v;
 }
 
 std::ostream& UnixAddress::insert(std::ostream& os) const {

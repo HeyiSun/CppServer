@@ -7,7 +7,7 @@
 
 namespace CppServer {
 
-CppServer::Logger::ptr g_logger = CPPSERVER_LOG_NAME("system");
+static CppServer::Logger::ptr g_logger = CPPSERVER_LOG_NAME("system");
 
 pid_t GetThreadId() {
     return syscall(SYS_gettid);
