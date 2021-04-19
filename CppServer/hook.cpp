@@ -112,7 +112,6 @@ retry:
         n = fun(fd, std::forward<Args>(args)...);
     }
     if (n == -1 && errno == EAGAIN) {  // no data on the socket
-        CPPSERVER_LOG_INFO(g_logger) << "connect EAGAIN";
         CppServer::IOManager* iom = CppServer::IOManager::GetThis();
         CppServer::Timer::ptr timer;
         std::weak_ptr<timer_info> winfo(tinfo);
@@ -137,9 +136,7 @@ retry:
             }
             return -1;
         } else {
-            CPPSERVER_LOG_INFO(g_logger) << "connect swtich out";
             CppServer::Fiber::YieldToHold();
-            CPPSERVER_LOG_INFO(g_logger) << "connect swtich in";
             if (timer) {
                 timer->cancel();
             }
